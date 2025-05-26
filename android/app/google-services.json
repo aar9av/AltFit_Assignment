@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "160153395179",
+    "project_id": "altfit-assignment",
+    "storage_bucket": "altfit-assignment.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:160153395179:android:3cccb1777f70b69c9743ae",
+        "android_client_info": {
+          "package_name": "com.example.altfit_asssignment"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAs8mi1ILLPwkPsgTULH_ymHspKdlfLdTI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

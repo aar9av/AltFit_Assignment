@@ -18,7 +18,7 @@ Widget body(BuildContext context, int pageIndex, dynamic bodyData) {
       content = calendar(context, bodyData['calendar']);
       break;
     default:
-      content = calendar(context, bodyData['calendar']);
+      content = Home(homeData: bodyData['home']);
   }
 
   return Container(

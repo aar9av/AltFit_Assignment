@@ -1,19 +1,37 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-import 'Data.dart';
+import 'ErrorPage.dart';
 import 'HomePage.dart';
 
 ValueNotifier<bool> modeNotifier = ValueNotifier(true);
 
-void main() {
-  dynamic data = Data.data;
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  dynamic data = await getDataFromFirestore();
   runApp(AltFitAssignment(data: data));
+}
+
+Future<dynamic> getDataFromFirestore() async {
+  try {
+    final docSnapshot = await FirebaseFirestore.instance.collection('Data').doc('data').get();
+    if (docSnapshot.exists) {
+      dynamic data = docSnapshot.data();
+      return data;
+    } else {
+      return "error";
+    }
+  } catch (e) {
+    return "error";
+  }
 }
 
 class AltFitAssignment extends StatelessWidget {
   final dynamic data;
 
-  AltFitAssignment({super.key, required this.data});
+  const AltFitAssignment({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +56,8 @@ class AltFitAssignment extends StatelessWidget {
             ),
             useMaterial3: true,
           ),
-          home: HomePage(
+          home: data == "error" ? const ErrorPage() :
+          HomePage(
             title: data['title'],
             bodyData: data['body'],
           ),

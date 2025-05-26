@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'ProgramPage.dart';
+
 class Home extends StatefulWidget {
   final dynamic homeData;
 
@@ -13,7 +15,8 @@ class _HomeState extends State<Home> {
   int index = 0;
   final List<String> tabs = ['My Programs', 'Explore Programs'];
   final TextEditingController searchController = TextEditingController();
-  List<Map<String, dynamic>> programs = [];
+  List<dynamic> programs = [];
+  bool isFilter = false;
 
   @override
   void initState() {
@@ -28,7 +31,7 @@ class _HomeState extends State<Home> {
   }
 
   void searchPrograms(String searchText) {
-    List<Map<String, dynamic>> allPrograms = index == 0 ? widget.homeData['My Programs']['programs'] : widget.homeData['Explore Programs']['programs'];
+    List<dynamic> allPrograms = index == 0 ? widget.homeData['My Programs']['programs'] : widget.homeData['Explore Programs']['programs'];
     searchText = searchText.toLowerCase();
 
     if (searchText.isEmpty) {
@@ -36,7 +39,7 @@ class _HomeState extends State<Home> {
       return;
     }
 
-    List<Map<String, dynamic>> filtered = allPrograms.where((program) {
+    List<dynamic> filtered = allPrograms.where((program) {
       return  program['title']?.toLowerCase().contains(searchText) ||
               program['trainer']?.toLowerCase().contains(searchText) ||
               program['goals']?.toLowerCase().contains(searchText);
@@ -158,7 +161,9 @@ class _HomeState extends State<Home> {
                       ),
                       IconButton(
                         onPressed: () {
-
+                          setState(() {
+                            isFilter = !isFilter;
+                          });
                         },
                         icon: Icon(
                           Icons.filter_list,
@@ -173,236 +178,254 @@ class _HomeState extends State<Home> {
           ),
         ),
         Expanded(
-          child: ListView.builder(
-            itemCount: programs.length,
-            itemBuilder: (context, listIndex) {
-              final program = programs[listIndex];
-              return Container(
-                margin:
-                const EdgeInsets.only(left: 20, right: 20, bottom: 20),
-                child: Material(
-                  elevation: 4,
-                  borderRadius: BorderRadius.circular(18),
-                  child: Container(
-                    width: double.infinity,
-                    height: 250,
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.onBackground,
-                      borderRadius: BorderRadius.circular(18),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          height: 140,
+          child: Stack(
+            children: [
+              ListView.builder(
+                itemCount: programs.length,
+                itemBuilder: (context, listIndex) {
+                  final program = programs[listIndex];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => ProgramPage(program: program),));
+                    },
+                    child: Container(
+                      margin:
+                      const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                      child: Material(
+                        elevation: 4,
+                        borderRadius: BorderRadius.circular(18),
+                        child: Container(
                           width: double.infinity,
+                          height: 250,
                           decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(18),
-                                topRight: Radius.circular(18)),
-                            image: DecorationImage(
-                              image: NetworkImage(program['imageUrl']),
-                              fit: BoxFit.cover,
-                            ),
+                            color: Theme.of(context).colorScheme.onBackground,
+                            borderRadius: BorderRadius.circular(18),
                           ),
-                          child: Stack(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Positioned(
-                                top: 10,
-                                right: 10,
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 7),
-                                  decoration: BoxDecoration(
-                                    color:
-                                    Theme.of(context).colorScheme.primary,
-                                    borderRadius: BorderRadius.circular(15),
+                              Container(
+                                height: 140,
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(18),
+                                      topRight: Radius.circular(18)),
+                                  image: DecorationImage(
+                                    image: NetworkImage(program['imageurl']),
+                                    fit: BoxFit.cover,
                                   ),
-                                  child: Center(
-                                    child: Text(
-                                      '₹${program['price']}',
-                                      style: TextStyle(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onError,
-                                        fontSize: 16,
+                                ),
+                                child: Stack(
+                                  children: [
+                                    Positioned(
+                                      top: 10,
+                                      right: 10,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 7),
+                                        decoration: BoxDecoration(
+                                          color:
+                                          Theme.of(context).colorScheme.primary,
+                                          borderRadius: BorderRadius.circular(15),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            '₹${program['price']}',
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onError,
+                                              fontSize: 16,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    Positioned(
+                                      bottom: 20,
+                                      left: 20,
+                                      child: Text(
+                                        program['title'],
+                                        style: TextStyle(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onError,
+                                          fontSize: 24,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Row(
+                                children: [
+                                  Container(
+                                    height: 32,
+                                    width: 32,
+                                    margin: const EdgeInsets.all(12),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      image: DecorationImage(
+                                        image: NetworkImage(
+                                            program['trainerProfileUrl']),
+                                        fit: BoxFit.cover,
                                       ),
                                     ),
                                   ),
-                                ),
+                                  Text(
+                                    program['trainer'],
+                                    style: TextStyle(
+                                      color:
+                                      Theme.of(context).colorScheme.secondary,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  )
+                                ],
                               ),
-                              Positioned(
-                                bottom: 20,
-                                left: 20,
-                                child: Text(
-                                  program['title'],
-                                  style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onError,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    bottom: 10, left: 10, right: 10),
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 6),
+                                        decoration: BoxDecoration(
+                                          color:
+                                          Theme.of(context).colorScheme.primary,
+                                          borderRadius: BorderRadius.circular(24),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.flag_outlined,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onError,
+                                              size: 18,
+                                            ),
+                                            Text(
+                                              ' ${program['goals']}',
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .onError,
+                                                fontSize: 16,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 6),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).colorScheme.surface,
+                                          border: Border.all(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary),
+                                          borderRadius: BorderRadius.circular(24),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              height: 18,
+                                              width: 18,
+                                              decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: program['difficulty'] == "Easy"
+                                                      ? Colors.green.shade800
+                                                      : program['difficulty'] ==
+                                                      "Medium"
+                                                      ? Colors.orange.shade800
+                                                      : Colors.red.shade800,
+                                                  width: 4,
+                                                ),
+                                                color: program['difficulty'] == "Easy"
+                                                    ? Colors.green
+                                                    : program['difficulty'] == "Medium"
+                                                    ? Colors.orange
+                                                    : Colors.red,
+                                              ),
+                                            ),
+                                            Text(
+                                              ' ${program['difficulty']}',
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 6),
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).colorScheme.surface,
+                                          border: Border.all(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary),
+                                          borderRadius: BorderRadius.circular(24),
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Icon(
+                                              Icons.access_time,
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                              size: 18,
+                                            ),
+                                            Text(
+                                              ' ${program['duration']}',
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 14,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        Row(
-                          children: [
-                            Container(
-                              height: 32,
-                              width: 32,
-                              margin: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                  image: NetworkImage(
-                                      program['trainerProfileUrl']),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            Text(
-                              program['trainer'],
-                              style: TextStyle(
-                                color:
-                                Theme.of(context).colorScheme.secondary,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                            )
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              bottom: 10, left: 10, right: 10),
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color:
-                                    Theme.of(context).colorScheme.primary,
-                                    borderRadius: BorderRadius.circular(24),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.flag_outlined,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .onError,
-                                        size: 18,
-                                      ),
-                                      Text(
-                                        ' ${program['goals']}',
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .onError,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.surface,
-                                    border: Border.all(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary),
-                                    borderRadius: BorderRadius.circular(24),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Container(
-                                        height: 18,
-                                        width: 18,
-                                        decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                            color: program['difficulty'] == "Easy"
-                                                ? Colors.green.shade800
-                                                : program['difficulty'] ==
-                                                "Medium"
-                                                ? Colors.orange.shade800
-                                                : Colors.red.shade800,
-                                            width: 4,
-                                          ),
-                                          color: program['difficulty'] == "Easy"
-                                              ? Colors.green
-                                              : program['difficulty'] == "Medium"
-                                              ? Colors.orange
-                                              : Colors.red,
-                                        ),
-                                      ),
-                                      Text(
-                                        ' ${program['difficulty']}',
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.surface,
-                                    border: Border.all(
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary),
-                                    borderRadius: BorderRadius.circular(24),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Icon(
-                                        Icons.access_time,
-                                        color: Theme.of(context)
-                                            .colorScheme
-                                            .primary,
-                                        size: 18,
-                                      ),
-                                      Text(
-                                        ' ${program['duration']}',
-                                        style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .primary,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
-                  ),
+                  );
+                },
+              ),
+              isFilter ?
+              Positioned(
+                right: 20,
+                child: Container(
+                  height: double.infinity,
+                  width: double.infinity,
+                  color: Colors.pink,
                 ),
-              );
-            },
+              ) : const SizedBox(height: 0,),
+            ],
           ),
         ),
       ],
