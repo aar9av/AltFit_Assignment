@@ -12,8 +12,9 @@ import 'package:altfit_asssignment/main.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    dynamic data;
+
+    await tester.pumpWidget(AltFitAssignment(data: data));
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
